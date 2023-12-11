@@ -1,5 +1,7 @@
 import math
 
+from util import floor_to_base, generate_whitespace_chart
+
 
 def get_title(
     name,
@@ -72,18 +74,39 @@ class Category:
 def create_spend_chart(categories):
     title = "Percentage spent by category"
 
-    expenditures = 0
+    category_expenditures = []
+    longest_category_name = ""
 
-    # calculate total expenditures by category
-    # iterate over each category
-    #### filter by withdrawals
-    #### add them all up
+    for i, category in enumerate(categories):
+        if len(category.name) > len(longest_category_name):
+            longest_category_name = category.name
 
-    # reduce expenditures list to a sum
-    total_expenditure = 0
+        category_expenditures.append(0)
+        for entry in category.ledger:
+            if entry["amount"] < 0:
+                category_expenditures[i] += abs(entry["amount"])
 
-    # map over expenditures and get list of percentages
-    #### do: divide each expenditure ...
-    category_percentages = 0
+    total_expenditure = sum(category_expenditures)
 
-    return title
+    # Multiples of 10
+    category_percentages = []
+
+    for category_expenditure in category_expenditures:
+        bar_percentage = floor_to_base(category_expenditure / total_expenditure * 100)
+        category_percentages.append(bar_percentage)
+
+    chart_width = 5 + (len(categories) * 3)
+    chart_height = 12 + len(longest_category_name)
+
+    chart = generate_whitespace_chart(chart_width, chart_height)
+
+    # add percentages
+    for i, percentage in enumerate(range(100, -10, -10)):
+        percentage_text = f"{percentage}| "
+        text_length = len(percentage_text)
+
+        chart[i][5 - text_length : 5] = list(percentage_text)
+
+    chart_text = "\n".join(["".join(row) for row in chart])
+
+    return chart_text
