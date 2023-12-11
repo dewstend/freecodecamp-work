@@ -70,7 +70,6 @@ class Category:
         return True
 
 
-# TODO
 def create_spend_chart(categories):
     title = "Percentage spent by category"
 
@@ -95,18 +94,43 @@ def create_spend_chart(categories):
         bar_percentage = floor_to_base(category_expenditure / total_expenditure * 100)
         category_percentages.append(bar_percentage)
 
-    chart_width = 5 + (len(categories) * 3)
+    len_categories = len(categories)
+
+    chart_width = 5 + (len_categories * 3)
     chart_height = 12 + len(longest_category_name)
 
     chart = generate_whitespace_chart(chart_width, chart_height)
 
-    # add percentages
+    # convert char matrix into string
+    def get_chart_text():
+        return "\n".join(["".join(row) for row in chart])
+
+    # draw percentage labels
     for i, percentage in enumerate(range(100, -10, -10)):
         percentage_text = f"{percentage}| "
         text_length = len(percentage_text)
 
         chart[i][5 - text_length : 5] = list(percentage_text)
 
-    chart_text = "\n".join(["".join(row) for row in chart])
+    # draw horizontal rule
+    chart[11] = list(f'    -{"-" * (3 * len_categories)}')
 
-    return chart_text
+    # draw categories and bars
+    for i, category_percentage in enumerate(category_percentages):
+        # how many 'o's we'll need to draw (label 0 = 1, label 50 = 6)
+        percentage_label_count = int((category_percentage / 10) + 1)
+
+        # draw each 'o' for this bar
+        for j in range(percentage_label_count):
+            column_index = 3 * i
+            chart[10 - j][5 + column_index] = "o"
+
+        # draw each letter for this category name
+        for j, char in enumerate(categories[i].name):
+            column_index = 3 * i
+            chart[12 + j][5 + column_index] = char
+
+    # append title
+    chart = [list(title), *chart]
+
+    return get_chart_text()
