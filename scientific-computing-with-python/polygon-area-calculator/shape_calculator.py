@@ -26,3 +26,15 @@ class Rectangle:
       return "Too big for picture."
     
     return "\n".join(['*' * self.width for _ in range(self.height)])
+  
+class Square(Rectangle):
+  def __str__(self):
+    return f'Square(side={self.width})'
+  
+  def __init__(self, side: int):
+    self.width = side
+    self.height = side
+
+  def set_side(self, side: int):
+    self.width = side
+    self.height = side
