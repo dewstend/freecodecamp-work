@@ -1,3 +1,6 @@
+from math import floor
+
+
 class Rectangle:
   def __str__(self):
     return f'Rectangle(width={self.width}, height={self.height})'
@@ -26,6 +29,9 @@ class Rectangle:
       return "Too big for picture."
     
     return "\n".join(['*' * self.width for _ in range(self.height)]) + "\n"
+  
+  def get_amount_inside(self, shape: 'Rectangle'):
+    return floor(self.get_area() / shape.get_area())
   
 class Square(Rectangle):
   def __str__(self):
