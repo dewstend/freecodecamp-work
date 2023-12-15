@@ -1,4 +1,7 @@
 class Rectangle:
+  def __str__(self):
+    return f'Rectangle(width={self.width}, height={self.height})'
+
   def __init__(self, width: int, height: int):
     self.width = width
     self.height = height
