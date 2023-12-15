@@ -1,0 +1,7 @@
+class Rectangle:
+
+
+
+
+class Square:
+
