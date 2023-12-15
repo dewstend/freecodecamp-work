@@ -25,7 +25,7 @@ class Rectangle:
     if self.width > 50 or self.height > 50:
       return "Too big for picture."
     
-    return "\n".join(['*' * self.width for _ in range(self.height)])
+    return "\n".join(['*' * self.width for _ in range(self.height)]) + "\n"
   
 class Square(Rectangle):
   def __str__(self):
