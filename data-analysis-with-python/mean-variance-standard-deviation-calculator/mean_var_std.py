@@ -9,37 +9,32 @@ def calculate(list):
 
     arr = arr.reshape((3, 3))
 
-    # I don't like looking at this as much as the next person.
-    calculations = {
-        "mean": [
-            np.mean(arr, axis=0).tolist(),
-            np.mean(arr, axis=1).tolist(),
-            np.mean(arr),
-        ],
-        "variance": [
-            np.var(arr, axis=0).tolist(),
-            np.var(arr, axis=1).tolist(),
-            np.var(arr),
-        ],
-        "standard deviation": [
-            np.std(arr, axis=0).tolist(),
-            np.std(arr, axis=1).tolist(),
-            np.std(arr),
-        ],
-        "max": [
-            np.max(arr, axis=0).tolist(),
-            np.max(arr, axis=1).tolist(),
-            np.max(arr),
-        ],
-        "min": [
-            np.min(arr, axis=0).tolist(),
-            np.min(arr, axis=1).tolist(),
-            np.min(arr),
-        ],
-        "sum": [
-            np.sum(arr, axis=0).tolist(),
-            np.sum(arr, axis=1).tolist(),
-            np.sum(arr),
-        ],
-    }
+    operations = [
+        ["mean"],
+        ["variance", "var"],
+        ["standard deviation", "std"],
+        ["max"],
+        ["min"],
+        ["sum"],
+    ]
+
+    calculations = {}
+
+    # You'd wonder if developing this approach was cleaner/faster... idk, looks cool
+    for operation in operations:
+        name = operation[0]
+
+        if len(operation) == 2:
+            method = operation[1]
+        else:
+            method = name
+
+        np_func = getattr(np, method)
+
+        calculations[name] = [
+            np_func(arr, axis=0).tolist(),
+            np_func(arr, axis=1).tolist(),
+            np_func(arr),
+        ]
+
     return calculations
