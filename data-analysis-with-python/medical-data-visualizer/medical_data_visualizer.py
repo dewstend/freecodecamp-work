@@ -19,20 +19,25 @@ df.loc[df["gluc"] > 1, "gluc"] = 1
 # Draw Categorical Plot
 def draw_cat_plot():
     # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
-    df_cat = None
-
+    df_cat = df.melt(
+        id_vars="cardio",
+        value_vars=["cholesterol", "gluc", "smoke", "alco", "active", "overweight"],
+    )
 
     # Group and reformat the data to split it by 'cardio'. Show the counts of each feature. You will have to rename one of the columns for the catplot to work correctly.
-    df_cat = None
-    
+    df_cat = (
+        df_cat.groupby(["cardio", "variable", "value"])["variable"]
+        .count()
+        .reset_index(name="total")
+    )
 
     # Draw the catplot with 'sns.catplot()'
-
-
+    catplot = sns.catplot(
+        data=df_cat, kind="bar", x="variable", y="total", hue="value", col="cardio"
+    )
 
     # Get the figure for the output
-    fig = None
-
+    fig = catplot.figure
 
     # Do not modify the next two lines
     fig.savefig('catplot.png')
@@ -42,22 +47,25 @@ def draw_cat_plot():
 # Draw Heat Map
 def draw_heat_map():
     # Clean the data
-    df_heat = None
+    df_heat = df[
+        (df["ap_lo"] <= df["ap_hi"])
+        & (df["height"] >= df["height"].quantile(0.025))
+        & (df["height"] <= df["height"].quantile(0.975))
+        & (df["weight"] >= df["weight"].quantile(0.025))
+        & (df["weight"] <= df["weight"].quantile(0.975))
+    ]
 
     # Calculate the correlation matrix
-    corr = None
+    corr = df_heat.corr()
 
     # Generate a mask for the upper triangle
-    mask = None
-
-
+    mask = np.triu(corr)
 
     # Set up the matplotlib figure
-    fig, ax = None
+    fig, ax = plt.subplots(figsize=(15, 15))
 
     # Draw the heatmap with 'sns.heatmap()'
-
-
+    sns.heatmap(corr, mask=mask, ax=ax, annot=True, fmt=".1f")
 
     # Do not modify the next two lines
     fig.savefig('heatmap.png')
