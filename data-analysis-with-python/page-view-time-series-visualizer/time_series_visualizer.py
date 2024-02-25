@@ -5,18 +5,25 @@ from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
 # Import data (Make sure to parse dates. Consider setting index column to 'date'.)
-df = None
+df = pd.read_csv("./fcc-forum-pageviews.csv", parse_dates=["date"])
+
+df = df.set_index("date")
 
 # Clean data
-df = None
+df = df[
+    (df["value"] < df["value"].quantile(0.975))
+    & (df["value"] > df["value"].quantile(0.025))
+]
 
 
 def draw_line_plot():
     # Draw line plot
-
-
-
-
+    fig = df.plot(
+        title="Daily freeCodeCamp Forum Page Views 5/2016-12/2019",
+        xlabel="Date",
+        ylabel="Page Views",
+        figsize=[16, 10],
+    ).figure
 
     # Save image and return fig (don't change this part)
     fig.savefig('line_plot.png')
@@ -24,13 +31,35 @@ def draw_line_plot():
 
 def draw_bar_plot():
     # Copy and modify data for monthly bar plot
-    df_bar = None
+    df_bar = df.copy()
+
+    df_bar = (
+        df_bar.groupby([df_bar.index.year, df_bar.index.month_name()]).mean().unstack()
+    )
+
+    df_bar = df_bar.droplevel(0, axis=1)
+    df_bar = df_bar[
+        [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+        ]
+    ]
+    df_bar.columns.name = "Months"
 
     # Draw bar plot
-
-
-
-
+    fig = df_bar.plot(
+        kind="bar", figsize=[16, 5], xlabel="Years", ylabel="Average Page Views"
+    ).figure
 
     # Save image and return fig (don't change this part)
     fig.savefig('bar_plot.png')
