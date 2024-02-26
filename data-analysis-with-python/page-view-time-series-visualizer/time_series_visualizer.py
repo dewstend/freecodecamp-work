@@ -4,6 +4,23 @@ import seaborn as sns
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
+months = pd.Series(
+    [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ]
+)
+
 # Import data (Make sure to parse dates. Consider setting index column to 'date'.)
 df = pd.read_csv("./fcc-forum-pageviews.csv", parse_dates=["date"])
 
@@ -18,7 +35,8 @@ df = df[
 
 def draw_line_plot():
     # Draw line plot
-    fig = df.plot(
+    df_line = df.copy()
+    fig = df_line.plot(
         title="Daily freeCodeCamp Forum Page Views 5/2016-12/2019",
         xlabel="Date",
         ylabel="Page Views",
@@ -38,22 +56,7 @@ def draw_bar_plot():
     )
 
     df_bar = df_bar.droplevel(0, axis=1)
-    df_bar = df_bar[
-        [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-        ]
-    ]
+    df_bar = df_bar[months]
     df_bar.columns.name = "Months"
 
     # Draw bar plot
@@ -70,13 +73,20 @@ def draw_box_plot():
     df_box = df.copy()
     df_box.reset_index(inplace=True)
     df_box['year'] = [d.year for d in df_box.date]
-    df_box['month'] = [d.strftime('%b') for d in df_box.date]
+    df_box["month"] = pd.DatetimeIndex(df_box["date"]).month_name().str[:3]  # hackish
 
     # Draw box plots (using Seaborn)
+    fig, axes = plt.subplots(1, 2, figsize=(16, 9))
 
+    sns.boxplot(df_box, x="year", y="value", ax=axes[0]).set(
+        title="Year-wise Box Plot (Trend)", xlabel="Year", ylabel="Page Views"
+    )
 
-
-
+    sns.boxplot(
+        df_box, x="month", y="value", ax=axes[1], order=months.str.slice(0, 3)
+    ).set(
+        title="Month-wise Box Plot (Seasonality)", xlabel="Month", ylabel="Page Views"
+    )
 
     # Save image and return fig (don't change this part)
     fig.savefig('box_plot.png')
